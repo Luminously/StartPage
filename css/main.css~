@@ -1,0 +1,140 @@
+html, body {
+	background-color: #0c1021;
+	background-color: #FFF;
+	color: #AAA;
+	font-family: Quicksand, Trebuchet, Arial, Sans-Serif;
+	font-size: 14pt;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	width: 100%;
+}
+a {
+	color: #888;
+	text-decoration: none;
+}
+a:hover {
+	color: #08C;
+}
+body {
+	margin-top: 5%;
+}
+h1 {
+	font-size: 5em;
+	font-weight: normal;
+	margin: 0;
+	padding: 0;
+}
+input {
+	margin-right: 1em;
+}
+ul, ul li {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+ul li:before {
+	content: "+";
+	margin-right: 0.5em;
+	margin-left: 0.5em;
+}
+.clear:after {
+	clear: both;
+	content: ".";
+	display: block;
+	height: 0;
+	visibility: hidden;
+}
+.label {
+	font-size: 1.2em;
+}
+.link-input-button {
+	border: 1px solid transparent;
+	color: #AAA;
+	cursor: pointer;
+	padding: 2px 5px;
+}
+.link-input-button:hover {
+	border: 1px solid #888;
+	color: #EEE;
+}
+li .link-remove {
+	border: 1px solid #888;
+	color: #888;
+	cursor: pointer;
+	padding: 0 5px;
+	visibility: hidden;
+}
+li:hover .link-remove {
+	visibility: visible;
+}
+.toplink {
+	border-right: 2px solid #CCC;
+	color: #AAA;
+	cursor: pointer;
+	float: left;
+	margin-right: 1em;
+	padding-bottom: 5px;
+	width: 8em;
+}
+.toplink:hover {
+	color: #555;
+}
+#toplink-active {
+	color: #08C;
+}
+.toplink-remove {
+	border: 1px solid #888;
+	margin-left: 6em;
+	position: absolute;
+	padding: 0.1em 0.5em;
+	visibility: hidden;
+}
+.toplink:hover .toplink-remove {
+	visibility: visible;
+}
+#addTopLink {
+	border: 0;
+	line-height: 7em;
+}
+#jsonMenu {
+	bottom: 5px;
+	font-family: Consolas, Lucida Console, Monaco, monospace;
+	font-size: 0.8em;
+	position: fixed;
+	right: 15px;
+}
+#linkAbout {
+	bottom: 5px;
+	left: 15px;
+	position: fixed;
+}
+#linkContainer {
+	margin-top: 3em;
+	line-height: 1.8em;
+}
+#pageContainer {
+	display: inline-block;
+	margin: auto;
+	min-height: 200px;
+	padding: 35px 0;
+	padding-left: 25px;
+	padding-right: 35px;
+	text-align: left;
+}
+#statusBar {
+	background-color: #DDD;
+	color: #AAA;
+	font-family: Consolas, Lucida Console, Monaco, monospace;
+	font-size: 0.8em;
+	left: 50%;
+	margin: auto;
+	padding: 5px 15px;
+	position: absolute;
+	text-align: center;
+	top: 5px;
+}
+#toplinkContainer {
+	margin: 0;
+	padding: 0;
+}
