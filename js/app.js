@@ -7,15 +7,28 @@
 	'use strict';
 
 	// Set default links
-	var defaultData = {
-		'hello': {
-			'google': "http://www.google.com",
-			'identi.ca': 'http://www.identi.ca'
-		},
-		'goodbye': {
-			'test': 'http://b.com'
+	var defaultData = [
+		{
+			'name': 'hello',
+			'links': [
+				{
+					'name': 'google',
+					'url': "http://www.google.com",
+				}, {
+					'name': 'identi.ca',
+					'url': 'http://www.identi.ca'
+				}
+			]
+		}, {
+			'name': 'goodbye',
+			'links':  [
+				{
+					'name': 'test',
+					'url': 'http://b.com'
+				}
+			]
 		}
-	}
+	];
 
 	// Represent URL category
 	function Category(name) {
@@ -28,7 +41,8 @@
 		'<li class="category"><div><span>{{name}}</span></div>'
 		+ '<ul>{{links}}<li><a class="add-link" href="#">Add Link</a></li>'
 		+ '</ul></li>';
-	Category.prototype.stringDoh	= '{ name: {{name}}, links: [{{links}}] }';
+	Category.prototype.stringDoh	=
+		'{ "name": "{{name}}", "links": [{{links}}] }';
 	// Add a Link object to this Category
 	Category.prototype.add = function (name, url) {
 		this.children[this.count] = new Link(name, url, this.count);
@@ -70,18 +84,18 @@
 	};
 	// Get JSON string representation of thie Category instance
 	Category.prototype.toJSON = function () {
-		var s = '';
+		var a = [];
 
 		for (var p in this.children) {
 			if (this.children.hasOwnProperty(p)) {
-				s += this.children[p].toJSON();
+				a.push(this.children[p].toJSON());
 			}
 		}
 
 		return (
 			compile(this.stringDoh, {
 				name: this.name,
-				links: s
+				links: a.join(', ')
 			})
 		);
 	};
@@ -93,9 +107,9 @@
 		this.id		=	id;
 	}
 	// Mold it into any shape you want! Perfect gift for any childNode.
-	Link.prototype.htmlDoh		=	'<li data-id="{{id}}">'
-		+ '<a class="link" href="{{url}}">{{name}}</a></li>';
-	Link.prototype.stringDoh	=	'{ name: {{name}}, url: {{url}} }';
+	Link.prototype.htmlDoh		=	'<li>'
+		+ '<a class="link" data-id="{{id}}" href="{{url}}">{{name}}</a></li>';
+	Link.prototype.stringDoh	=	'{ "name": "{{name}}", "url": "{{url}}" }';
 	// Get element representation of this Link instance
 	Link.prototype.toElement = function () {
 		return magic(this.html());
@@ -258,16 +272,19 @@
 				if (position.y >= 0) {
 					// Delete Link
 					// Find data-id
-					var currCategory =
-						document.getElementsByClassName('category')[position.x];
-					var currLink =
+					var	currCategory =
+						document.getElementsByClassName('category')[position.x],
+						currLink =
 						currCategory.getElementsByClassName('link')[position.y];
-					categories[position.x].remove(currLink['data-id']);
+					categories[position.x].remove(
+						currLink.getAttribute('data-id')
+					);
 				} else if (position.x >= 0) {
 					// Delete Category
 				}
 				break;
 			}
+			save();
 			render();
 		}
 
@@ -297,10 +314,10 @@
 			return {
 				// Load settings or defaults
 				loadSettings: function () {
-					if (!storage.get('links')) {
+					if (!storage.get('data')) {
 						this.fromJSON(JSON.stringify(defaultData));
 					} else {
-						this.fromJSON(storage.get('links'));
+						this.fromJSON(storage.get('data'));
 					}
 
 					render();
@@ -323,29 +340,25 @@
 			categories = [];
 
 			// Unwrap JSON object
-			for (var m in tmp) {
-				if (tmp.hasOwnProperty(m)) {
-					var c = new Category(m);
+			for (var i = 0, j = tmp.length; i < j; i++) {
+				var c = new Category(tmp[i].name);
 
-					for (var n in tmp[m]) {
-						if (tmp[m].hasOwnProperty(n)) {
-							c.add(n, tmp[m][n]);
-						}
-					}
-
-					categories.push(c);
+				for (var p = 0, q = tmp[i].links, r = q.length; p < r; p++) {
+					c.add(q[p].name, q[p].url);
 				}
+
+				categories.push(c);
 			}
 		}
 		// Get JSON string representation of StartPage data
 		function toJSON() {
-			var s = '';
+			var a = [];
 
 			for (var i = 0, j = categories.length; i < j; i++) {
-				s += categories[i].toJSON();
+				a.push(categories[i].toJSON());
 			}
 
-			return '[' + s + ']';
+			return '[' + a.join(', ') + ']';
 		}
 		function render() {
 			console.log('render');
@@ -386,7 +399,7 @@
 			}
 		}
 		function save() {
-			storage.set('data', this.toJSON());
+			storage.set('data', toJSON());
 		}
 
 		return {
