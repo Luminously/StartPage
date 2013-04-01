@@ -14,9 +14,6 @@ ol, ul, li {
 }
 .category {
 	background: #08C;
-/*
-	box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.35);
-*/
 	float: left;
 	margin: 0;
 	margin-right: 15px;
@@ -92,6 +89,8 @@ ol, ul, li {
 	counter-reset: category -1;
 	margin: 0 auto;
 	margin-top: 25px;
-	margin-left: 20px;
 	width: auto;
+	padding: 0 20px;
+	position: absolute;
+	left: 50%;
 }

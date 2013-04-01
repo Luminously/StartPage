@@ -391,6 +391,7 @@
 						+= ' active';
 				}
 			}
+			element.style.left = (document.body.offsetWidth - element.offsetWidth) / 2 + 'px';
 		}
 		function save() {
 			storage.set('data', toJSON());
