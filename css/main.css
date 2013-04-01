@@ -35,7 +35,7 @@ ol, ul, li {
 	top: 100%;
 	width: 0;
 }
-.category:hover:after {
+.category:hover:after, .category.active:after {
 	border-top: 65px solid #333;
 }
 .category>div {
@@ -68,7 +68,7 @@ ol, ul, li {
 	text-align: left;
 	text-decoration: none;
 }
-.category a:hover, .category.active {
+.category a:hover, .category a.active {
 	background: #444;
 }
 
@@ -78,7 +78,7 @@ ol, ul, li {
 	margin-right: 3px;
 	visibility: hidden;
 }
-.category a:hover:before, .category.active:before {
+.category a:hover:before, .category a.active:before {
 	visibility: visible;
 }
 .clearfix:before, .clearfix:after {

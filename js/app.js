@@ -8,12 +8,12 @@
 
 	// Set default links
 	var defaultData = {
-		hello: {
-			facebook: "http://www.facebook.com",
-			google: "http://www.google.com"
+		'hello': {
+			'google': "http://www.google.com",
+			'identi.ca': 'http://www.identi.ca'
 		},
-		goodbye: {
-			test: 'http://b.com'
+		'goodbye': {
+			'test': 'http://b.com'
 		}
 	}
 
@@ -33,6 +33,9 @@
 	Category.prototype.add = function (name, url) {
 		this.children[this.count] = new Link(name, url, this.count);
 		this.count++;
+	};
+	Category.prototype.get = function (idx) {
+		return this.children[idx];
 	};
 	// Given an id, remove Link associated with that id
 	Category.prototype.remove = function (id) {
@@ -56,6 +59,14 @@
 				links: s
 			})
 		);
+	};
+	// Can't use .length because we're using an object, not an array
+	Category.prototype.size = function () {
+		var c = 0;
+		for (var n in this.children) {
+			c++;
+		}
+		return c;
 	};
 	// Get JSON string representation of thie Category instance
 	Category.prototype.toJSON = function () {
@@ -83,7 +94,7 @@
 	}
 	// Mold it into any shape you want! Perfect gift for any childNode.
 	Link.prototype.htmlDoh		=	'<li data-id="{{id}}">'
-		+ '<a href="{{url}}">{{name}}</a></li>';
+		+ '<a class="link" href="{{url}}">{{name}}</a></li>';
 	Link.prototype.stringDoh	=	'{ name: {{name}}, url: {{url}} }';
 	// Get element representation of this Link instance
 	Link.prototype.toElement = function () {
@@ -109,6 +120,7 @@
 		var	instance,
 			categories,
 			element,
+			position,
 			storage,
 			storageImplementations;
 
@@ -167,17 +179,31 @@
 			}
 		};
 
+		// Append a Category object
 		function addCategory() {
 			var title = prompt ('Name your shiny new category!');
-			categories.push(new Category(title));
+			if (title) {
+				categories.push(new Category(title));
+				return true;
+			}
+			return false;
 		}
 
+		// Append a Link object to the current Category
 		function addLink() {
-			var title	=	prompt ('What will you name this link?'),
-				url		=	prompt ('What is the link\'s URL?', 'http://');
+			if (position.x >= 0) {
+				var title, url;
+				// Don't prompt for URL if title prompt cancelled
+				(title	=	prompt ('What will you name this link?')) &&
+				(url	=	prompt ('What is the link\'s URL?', 'http://'));
 
-		// Get current category
-		// Category.add(title, url);
+				// Add to current category
+				if (title && url) {
+					categories[position.x].add(title, url);
+					return true;
+				}
+			}
+			return false;
 		}
 
 		var VK = {
@@ -192,29 +218,69 @@
 			switch (key) {
 			case VK.UP :
 				console.log('up');
+				if (position.x >= 0) {
+					position.y = Math.max(-1, position.y - 1);
+				}
 				break;
 			case VK.DOWN:
 				console.log('down');
+				if (position.x >= 0) {
+					if (position.y + 1 > categories[position.x].size() - 1) {
+						position.y += (addLink() ? 1 : 0);
+					} else {
+						position.y = Math.min(categories[position.x].size() - 1,
+							position.y + 1);
+					}
+				}
 				break;
 			case VK.LEFT:
 				console.log('left');
+				position.x = Math.max(-1, position.x - 1);
+				position.y = -1;
 				break;
 			case VK.RIGHT:
 				console.log('right');
+				if (position.x > categories.length - 2) {
+					position.x += (addCategory() ? 1 : 0);
+				} else {
+					position.x = Math.min(categories.length - 1, position.x + 1);
+				}
+				position.y = -1;
 				break;
 			case VK.ENTER:
 				console.log('enter');
+				if (position.x >= 0 && position.y >= 0) {
+					location.href = categories[position.x].get(position.y).url;
+				}
 				break;
 			case VK.DELETE:
 				console.log('delete');
+				if (position.y >= 0) {
+					// Delete Link
+					// Find data-id
+					var currCategory =
+						document.getElementsByClassName('category')[position.x];
+					var currLink =
+						currCategory.getElementsByClassName('link')[position.y];
+					categories[position.x].remove(currLink['data-id']);
+				} else if (position.x >= 0) {
+					// Delete Category
+				}
 				break;
 			}
+			render();
 		}
 
 		function init() {
 			// Initialize this object
 			categories	=	[];
 
+			position = {
+				x: -1,
+				y: -1
+			};
+
+			// Find supported storageImpl
 			if (storageImplementations.dom.supported()) {
 				storage = storageImplementations.dom;
 			} else if (storageImplementations.cookie.supported()) {
@@ -243,37 +309,43 @@
 				toElement: function () {
 					return element;
 				},
-				// Load JSON string into StartPage
-				fromJSON: function (s) {
-					var tmp = JSON.parse(s);
-					categories = [];
-
-					// Unwrap JSON object
-					for (var m in tmp) {
-						if (tmp.hasOwnProperty(m)) {
-							var c = new Category(m);
-
-							for (var n in tmp[m]) {
-								if (tmp[m].hasOwnProperty(n)) {
-									c.add(n, tmp[m][n]);
-								}
-							}
-
-							categories.push(c);
-						}
-					}
+				fromJSON: function (json) {
+					fromJSON(json);
 				},
-				// Get JSON string representation of StartPage data
 				toJSON: function () {
-					var s = '';
-
-					for (var i = 0, j = categories.length; i < j; i++) {
-						s += categories[i].toJSON();
-					}
-
-					return '[' + s + ']';
+					return toJSON();
 				}
 			}
+		}
+		// Load JSON string into StartPage
+		function fromJSON (s) {
+			var tmp = JSON.parse(s);
+			categories = [];
+
+			// Unwrap JSON object
+			for (var m in tmp) {
+				if (tmp.hasOwnProperty(m)) {
+					var c = new Category(m);
+
+					for (var n in tmp[m]) {
+						if (tmp[m].hasOwnProperty(n)) {
+							c.add(n, tmp[m][n]);
+						}
+					}
+
+					categories.push(c);
+				}
+			}
+		}
+		// Get JSON string representation of StartPage data
+		function toJSON() {
+			var s = '';
+
+			for (var i = 0, j = categories.length; i < j; i++) {
+				s += categories[i].toJSON();
+			}
+
+			return '[' + s + ']';
 		}
 		function render() {
 			console.log('render');
@@ -300,6 +372,21 @@
 					addLink();
 				}
 			}
+
+			if (position.x >= 0) {
+				// Highlight selected Category/Link
+				var selected =
+					document.getElementsByClassName('category')[position.x];
+				selected.className += ' active';
+
+				if (position.y >= 0) {
+					selected.getElementsByClassName('link')[position.y].className
+						+= ' active';
+				}
+			}
+		}
+		function save() {
+			storage.set('data', this.toJSON());
 		}
 
 		return {
