@@ -231,13 +231,11 @@
 		function handleKey(key) {
 			switch (key) {
 			case VK.UP :
-				console.log('up');
 				if (position.x >= 0) {
 					position.y = Math.max(-1, position.y - 1);
 				}
 				break;
 			case VK.DOWN:
-				console.log('down');
 				if (position.x >= 0) {
 					if (position.y + 1 > categories[position.x].size() - 1) {
 						position.y += (addLink() ? 1 : 0);
@@ -248,12 +246,10 @@
 				}
 				break;
 			case VK.LEFT:
-				console.log('left');
 				position.x = Math.max(-1, position.x - 1);
 				position.y = -1;
 				break;
 			case VK.RIGHT:
-				console.log('right');
 				if (position.x > categories.length - 2) {
 					position.x += (addCategory() ? 1 : 0);
 				} else {
@@ -262,16 +258,12 @@
 				position.y = -1;
 				break;
 			case VK.ENTER:
-				console.log('enter');
 				if (position.x >= 0 && position.y >= 0) {
 					location.href = categories[position.x].get(position.y).url;
 				}
 				break;
 			case VK.DELETE:
-				console.log('delete');
 				if (position.y >= 0) {
-					// Delete Link
-					// Find data-id
 					var	currCategory =
 						document.getElementsByClassName('category')[position.x],
 						currLink =
@@ -281,6 +273,8 @@
 					);
 				} else if (position.x >= 0) {
 					// Delete Category
+					categories.splice(position.x, 1);
+					position.x--;
 				}
 				break;
 			}
