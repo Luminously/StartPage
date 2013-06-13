@@ -42,7 +42,7 @@
   // Mold it into any shape you want! Perfect gift for any childNode.
   Category.prototype.htmlDoh =
     '<li class="category"><div><span>{{name}}</span></div>'
-    + '<ul>{{links}}<li><a class="add-link" href="#">Add Link</a></li>'
+    + '<ul>{{links}}{{addLink}}'
     + '</ul></li>';
   Category.prototype.stringDoh =
     '{ "name": "{{name}}", "links": [{{links}}] }';
@@ -135,6 +135,7 @@
   // Singleton object representing StartPage application
   var StartPage = (function () {
     var isAddingCategory,
+        isAddingLink,
         instance,
         categories,
         element,
@@ -144,6 +145,7 @@
         tmpl;
 
     isAddingCategory = !!0; // Whether to render "add category" block
+    isAddingLink     = !!0; // Whether to render "add link" block
 
     //
     //  Storage Strategies: (cookie|dom|none)
@@ -207,12 +209,19 @@
       active: compile(Link.prototype.htmlDoh, {
         id: -1,
         url: '#',
-        name: compile(tmpl.input, { placeholder: 'title' })
+        name: 'add link: <br />'
+            + compile(tmpl.input, { placeholder: 'title' }) + '<br />'
+            + compile(tmpl.input, { placeholder: 'url' })
       }),
-      inactive: ''
+      inactive: compile(Link.prototype.htmlDoh, {
+        id: -1,
+        url: '#',
+        name: 'add link'
+      })
     };
     tmpl.addCategory = {
       active: compile(Category.prototype.htmlDoh, {
+        addLink: '',
         links: '',
         name: compile(tmpl.input, { placeholder: 'name' })
       }),
@@ -253,13 +262,16 @@
       case VK.UP:
         if (position.x >= 0) {
           position.y = Math.max(-1, position.y - 1);
+          isAddingLink = !!0;
         }
         break;
 
       case VK.DOWN:
         if (position.x >= 0) {
           if (position.y + 1 > categories[position.x].size() - 1) {
-            position.y += (addLink() ? 1 : 0);
+            position.y = Math.min(categories[position.x].size(),
+              position.y + 1);
+            isAddingLink = true;
           } else {
             position.y = Math.min(categories[position.x].size() - 1,
               position.y + 1);
@@ -269,6 +281,7 @@
       case VK.LEFT:
         position.x = Math.max(-1, position.x - 1);
         position.y = -1;
+        isAddingLink = !!0;
         break;
 
       case VK.RIGHT:
@@ -279,6 +292,7 @@
           position.x = Math.min(categories.length - 1, position.x + 1);
         } else { return }
         position.y = -1;
+        isAddingLink = !!0;
         break;
 
       case VK.ENTER:
@@ -391,7 +405,22 @@
 
       // Build interface
       for (var i = 0, j = categories.length; i < j; i++) {
-        element.appendChild(categories[i].toElement());
+        var categoryHtml = compile(categories[i].html(), {
+          addLink: tmpl.addLink[ (i == position.x && isAddingLink)
+            ? 'active' : 'inactive' ]
+        });
+        var category = magic(categoryHtml);
+        if (i == position.x && isAddingLink) {
+          for (var p = 0, q = category.getElementsByTagName('input'),
+              r = q.length; p < r; p++) {
+            if (p == 0) q[p].autofocus = true;
+            q[p].onblur = function () {
+              isAddingLink = !!0;
+              render();
+            }
+          }
+        }
+        element.appendChild(category);
       }
       if (isAddingCategory) {
         var categoryPrompt = magic(tmpl.addCategory.active);
