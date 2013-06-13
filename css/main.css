@@ -128,3 +128,6 @@ ol, ul, li {
   margin-top: 15px;
   width: 100%;
 }
+.link input.url {
+  text-transform: none;
+}

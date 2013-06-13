@@ -257,7 +257,7 @@
 
     // Handle keypresses
     function handleKey(key) {
-      if (isAddingCategory) return;
+      if (isAddingCategory || isAddingLink) return;
       switch (key) {
       case VK.UP:
         if (position.x >= 0) {
@@ -411,10 +411,17 @@
         });
         var category = magic(categoryHtml);
         if (i == position.x && isAddingLink) {
-          for (var p = 0, q = category.getElementsByTagName('input'),
-              r = q.length; p < r; p++) {
-            if (p == 0) q[p].autofocus = true;
-            q[p].onblur = function () {
+          var q = category.getElementsByTagName('input');
+          q[0].autofocus = true;
+          q[1].className += ' url';
+          q[1].value = 'http://';
+
+          q[0].onkeydown = q[1].onkeypress = function (e) {
+            if (e.which == VK.ENTER && q[0].value && q[1].value) {
+              categories[position.x].add(q[0].value, q[1].value);
+              isAddingLink = !!0;
+              render();
+            } else if (e.which == VK.ESCAPE) {
               isAddingLink = !!0;
               render();
             }
@@ -456,10 +463,20 @@
       document.body.innerHTML = ''; // Clear body
       document.body.appendChild(element);
 
-      var addLinks = document.getElementsByClassName('add-link');
-      for (var i = 0, j = addLinks.length; i < j; i++) {
-        addLinks[i].onclick = function () {
-          addLink();
+      for (var i = 0, j = document.getElementsByClassName('category'),
+          k = j.length; i < k; i++) {
+        j[i].setAttribute('data-catId', i);
+
+        for (var p = 0, q = document.getElementsByClassName('link'),
+            r = q.length; p < r; p++) {
+          if (q[p].getAttribute('data-id') == -1) {
+            q[p].onclick = function (e) {
+              position.x = e.target.parentNode.parentNode.parentNode
+                .getAttribute('data-catId');
+              isAddingLink = !!1;
+              render();
+            }
+          }
         }
       }
 
