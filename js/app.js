@@ -202,19 +202,19 @@
 
     // Templates for fake "add" elements
     tmpl = {};
-    tmpl.input   = '<input type="text" placeholder="add {{type}}">';
+    tmpl.input   = '<input type="text" placeholder="{{placeholder}}">';
     tmpl.addLink = {
       active: compile(Link.prototype.htmlDoh, {
         id: -1,
         url: '#',
-        name: compile(tmpl.input, { type: 'link' })
+        name: compile(tmpl.input, { placeholder: 'title' })
       }),
       inactive: ''
     };
     tmpl.addCategory = {
       active: compile(Category.prototype.htmlDoh, {
         links: '',
-        name: compile(tmpl.input, { type: 'category' })
+        name: compile(tmpl.input, { placeholder: 'name' })
       }),
       inactive: '<li class="category plus"><div>+</div></li>'
     };

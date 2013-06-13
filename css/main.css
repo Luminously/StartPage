@@ -78,6 +78,19 @@ ol, ul, li {
 .category a:hover:before, .category a.active:before {
 	visibility: visible;
 }
+.category input {
+  background: transparent;
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  border-bottom: 1px solid #555;
+	color: #FFF;
+	font-size: 24px;
+  outline: 0;
+  text-align: center;
+  text-transform: uppercase;
+  width: 80%;
+}
 .category.plus {
   background: none;
   font-size: 151px;
