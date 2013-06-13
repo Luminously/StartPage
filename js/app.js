@@ -143,7 +143,7 @@
         storageImplementations,
         tmpl;
 
-    isAddingCategory = !!1; // Whether to render "add category" block
+    isAddingCategory = !!0; // Whether to render "add category" block
 
     //
     //  Storage Strategies: (cookie|dom|none)
@@ -201,27 +201,23 @@
     };
 
     // Templates for fake "add" elements
-    tmpl = {
-      addLink: compile(Link.prototype.htmlDoh, {
+    tmpl = {};
+    tmpl.input   = '<input type="text" placeholder="add {{type}}">';
+    tmpl.addLink = {
+      active: compile(Link.prototype.htmlDoh, {
         id: -1,
         url: '#',
-        name: '<input type="text" placeholder="add category">'
+        name: compile(tmpl.input, { type: 'link' })
       }),
-      addCategory: compile(Category.prototype.htmlDoh, {
-        name: '<input type="text" placeholder="add link">',
-        links: ''
-      })
+      inactive: ''
     };
-
-    // Append a Category object
-    function addCategory() {
-      var title = prompt ('Name your shiny new category!');
-      if (title) {
-        categories.push(new Category(title));
-        return true;
-      }
-      return false;
-    }
+    tmpl.addCategory = {
+      active: compile(Category.prototype.htmlDoh, {
+        links: '',
+        name: compile(tmpl.input, { type: 'category' })
+      }),
+      inactive: '<li class="category plus"><div>+</div></li>'
+    };
 
     // Append a Link object to the current Category
     function addLink() {
@@ -241,6 +237,7 @@
     }
 
     var VK = {
+      ESCAPE: 27,
       UP:     38,
       DOWN:   40,
       LEFT:   37,
@@ -251,6 +248,7 @@
 
     // Handle keypresses
     function handleKey(key) {
+      if (isAddingCategory) return;
       switch (key) {
       case VK.UP:
         if (position.x >= 0) {
@@ -275,10 +273,11 @@
 
       case VK.RIGHT:
         if (position.x > categories.length - 2) {
-          position.x += (addCategory() ? 1 : 0);
-        } else {
+          position.x = Math.min(categories.length, position.x + 1);
+          isAddingCategory = true;
+        } else if (position.x < categories.length) {
           position.x = Math.min(categories.length - 1, position.x + 1);
-        }
+        } else { return }
         position.y = -1;
         break;
 
@@ -394,7 +393,35 @@
       for (var i = 0, j = categories.length; i < j; i++) {
         element.appendChild(categories[i].toElement());
       }
-      if (isAddingCategory) element.appendChild(magic(tmpl.addCategory));
+      if (isAddingCategory) {
+        var categoryPrompt = magic(tmpl.addCategory.active);
+        var promptField = categoryPrompt.getElementsByTagName('input')[0];
+
+        categoryPrompt.className += ' active';
+
+        var resetPrompt = function () { isAddingCategory = !!0; render(); };
+
+        promptField.onblur = resetPrompt;
+        categoryPrompt.onkeydown = function (e) {
+          if (e.which == VK.ESCAPE) {
+            position.x--;
+            resetPrompt();
+          } else if (e.which == VK.ENTER) {
+            categories.push(new Category(promptField.value));
+            resetPrompt();
+          }
+        };
+        promptField.autofocus = true;
+        element.appendChild(categoryPrompt);
+      } else {
+        var plus = magic(tmpl.addCategory.inactive);
+        plus.onclick = function () {
+          position.x = categories.length;
+          isAddingCategory = !!1;
+          render();
+        };
+        element.appendChild(plus);
+      }
       element.appendChild(clearfix);
 
       document.body.innerHTML = ''; // Clear body
@@ -407,7 +434,7 @@
         }
       }
 
-      if (position.x >= 0) {
+      if (position.x >= 0 && position.x < categories.length) {
         // Highlight selected Category/Link
         var selected =
           document.getElementsByClassName('category')[position.x];

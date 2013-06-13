@@ -78,6 +78,21 @@ ol, ul, li {
 .category a:hover:before, .category a.active:before {
 	visibility: visible;
 }
+.category.plus {
+  background: none;
+  font-size: 151px;
+  height: auto;
+  width: auto;
+}
+.category.plus div {
+  color: #CCC;
+}
+.category.plus div:hover {
+  color: #AAA;
+}
+.category.plus:after {
+  display: none;
+}
 .clearfix:before, .clearfix:after {
 	content: ' ';
 	display: table;
