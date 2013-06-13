@@ -116,12 +116,9 @@ ol, ul, li {
 }
 .container {
 	counter-reset: category -1;
-	margin: 0 auto;
-	margin-top: 25px;
+	margin: 35px auto;
 	width: auto;
 	padding: 0 20px;
-	position: absolute;
-	left: 50%;
 }
 .link input {
   font-size: 14px;

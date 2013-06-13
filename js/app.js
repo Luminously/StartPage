@@ -209,7 +209,7 @@
       active: compile(Link.prototype.htmlDoh, {
         id: -1,
         url: '#',
-        name: 'add link: <br />'
+        name: 'add link<br />'
             + compile(tmpl.input, { placeholder: 'title' }) + '<br />'
             + compile(tmpl.input, { placeholder: 'url' })
       }),
@@ -252,7 +252,12 @@
       LEFT:   37,
       RIGHT:  39,
       ENTER:  13,
-      DELETE: 46
+      DELETE: 46,
+
+      H: 72,
+      J: 74,
+      K: 75,
+      L: 76
     };
 
     // Handle keypresses
@@ -260,6 +265,7 @@
       if (isAddingCategory || isAddingLink) return;
       switch (key) {
       case VK.UP:
+      case VK.K:
         if (position.x >= 0) {
           position.y = Math.max(-1, position.y - 1);
           isAddingLink = !!0;
@@ -267,6 +273,7 @@
         break;
 
       case VK.DOWN:
+      case VK.J:
         if (position.x >= 0) {
           if (position.y + 1 > categories[position.x].size() - 1) {
             position.y = Math.min(categories[position.x].size(),
@@ -279,12 +286,14 @@
         }
         break;
       case VK.LEFT:
+      case VK.H:
         position.x = Math.max(-1, position.x - 1);
         position.y = -1;
         isAddingLink = !!0;
         break;
 
       case VK.RIGHT:
+      case VK.L:
         if (position.x > categories.length - 2) {
           position.x = Math.min(categories.length, position.x + 1);
           isAddingCategory = true;
@@ -463,23 +472,6 @@
       document.body.innerHTML = ''; // Clear body
       document.body.appendChild(element);
 
-      for (var i = 0, j = document.getElementsByClassName('category'),
-          k = j.length; i < k; i++) {
-        j[i].setAttribute('data-catId', i);
-
-        for (var p = 0, q = document.getElementsByClassName('link'),
-            r = q.length; p < r; p++) {
-          if (q[p].getAttribute('data-id') == -1) {
-            q[p].onclick = function (e) {
-              position.x = e.target.parentNode.parentNode.parentNode
-                .getAttribute('data-catId');
-              isAddingLink = !!1;
-              render();
-            }
-          }
-        }
-      }
-
       if (position.x >= 0 && position.x < categories.length) {
         // Highlight selected Category/Link
         var selected =
@@ -491,9 +483,8 @@
             += ' active';
         }
       }
-      element.style.left =
-        ((document.body.offsetWidth - element.offsetWidth) / 2) + 'px';
     }
+
     function save() {
       storage.set('data', toJSON());
     }
