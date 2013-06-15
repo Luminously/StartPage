@@ -32,7 +32,7 @@ ol, ul, li {
 	top: 100%;
 	width: 0;
 }
-.category:hover:after, .category.active:after {
+.category.active:after {
 	border-top: 65px solid #333;
 }
 .category>div {
@@ -48,7 +48,7 @@ ol, ul, li {
 .category span {
 	font-size: 24px;
 }
-.category:hover, .category.active {
+.category.active {
 	background: #333;
 }
 .category span:before {
@@ -66,7 +66,7 @@ ol, ul, li {
 	text-align: left;
 	text-decoration: none;
 }
-.category a:hover, .category a.active {
+.category a.active {
 	background: #444;
 }
 

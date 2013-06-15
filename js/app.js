@@ -213,11 +213,7 @@
             + compile(tmpl.input, { placeholder: 'title' }) + '<br />'
             + compile(tmpl.input, { placeholder: 'url' })
       }),
-      inactive: compile(Link.prototype.htmlDoh, {
-        id: -1,
-        url: '#',
-        name: 'add link'
-      })
+      inactive: ''
     };
     tmpl.addCategory = {
       active: compile(Category.prototype.htmlDoh, {
@@ -225,7 +221,7 @@
         links: '',
         name: compile(tmpl.input, { placeholder: 'name' })
       }),
-      inactive: '<li class="category plus"><div>+</div></li>'
+      inactive: ''
     };
 
     // Append a Link object to the current Category
@@ -406,7 +402,6 @@
       return '[' + a.join(', ') + ']';
     }
     function render() {
-      console.log('render');
       // Definitely not most efficient way of rendering har har
       var clearfix = magic('<div class="clearfix"></div>');
 
@@ -432,6 +427,7 @@
               render();
             } else if (e.which == VK.ESCAPE) {
               isAddingLink = !!0;
+              position.y--;
               render();
             }
           }
@@ -446,7 +442,12 @@
 
         var resetPrompt = function () { isAddingCategory = !!0; render(); };
 
-        promptField.onblur = resetPrompt;
+        promptField.onblur = function () {
+          if (promptField.value) {
+            categories.push(new Category(promptField.value));
+          }
+          resetPrompt();
+        }
         categoryPrompt.onkeydown = function (e) {
           if (e.which == VK.ESCAPE) {
             position.x--;
@@ -458,14 +459,6 @@
         };
         promptField.autofocus = true;
         element.appendChild(categoryPrompt);
-      } else {
-        var plus = magic(tmpl.addCategory.inactive);
-        plus.onclick = function () {
-          position.x = categories.length;
-          isAddingCategory = !!1;
-          render();
-        };
-        element.appendChild(plus);
       }
       element.appendChild(clearfix);
 
