@@ -445,16 +445,16 @@
         promptField.onblur = function () {
           if (promptField.value) {
             categories.push(new Category(promptField.value));
+          } else {
+            position.x--;
           }
           resetPrompt();
         }
         categoryPrompt.onkeydown = function (e) {
           if (e.which == VK.ESCAPE) {
-            position.x--;
             resetPrompt();
           } else if (e.which == VK.ENTER) {
-            categories.push(new Category(promptField.value));
-            resetPrompt();
+            promptField.blur();
           }
         };
         promptField.autofocus = true;
