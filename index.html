@@ -14,10 +14,13 @@
   <script src="js/lib/json2.js"></script>
   <script src="js/app.js"></script>
   <script>
-    window.applicationCache.addEventListener('updateReady', function () {
-        if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
-          window.applicationCache.swapCache();
-          window.location.reload();
+    var appCache = window.applicationCache;
+    appCache.addEventListener('updateReady', function () {
+        if (appCache.status == appCache.UPDATEREADY) {
+          appCache.swapCache();
+          if (confirm("A new version of StartPage is available. Reload?") {
+            window.location.reload();
+          }
         }
     });
   </script>
