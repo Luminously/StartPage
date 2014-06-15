@@ -1,20 +1,25 @@
-<!DOCTYPE html>
+<!DOCTYPE html manifest="cache.manifest">
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<title>StartPage.js</title>
+<head>
+  <meta charset="utf-8" />
+  <title>StartPage.js</title>
 
-		<!--[ begin Stylesheets ]-->
-		<link href='//fonts.googleapis.com/css?family=Julius+Sans+One'
-			rel='stylesheet' type='text/css'>
-		<link rel="stylesheet" type="text/css" href="css/main.css" />
-		<!--[ end Stylesheets ]-->
+  <!--[ begin Stylesheets ]-->
+  <link href='//fonts.googleapis.com/css?family=Julius+Sans+One'
+    rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="css/main.css" />
+  <!--[ end Stylesheets ]-->
 
-		<!--[ begin Scripts ]-->
-		<script type="text/javascript" src="js/lib/json2.js"></script>
-		<script type="text/javascript" src="js/app.js"></script>
-		<!--[ end Scripts ]-->
-	</head>
-	<body>
-	</body>
+  <!--[ begin Scripts ]-->
+  <script type="text/javascript" src="js/lib/json2.js"></script>
+  <script type="text/javascript" src="js/app.js"></script>
+  <script>
+    window.applicationCache.addEventListener('updateReady', function () {
+        window.location.reload();
+    });
+  </script>
+  <!--[ end Scripts ]-->
+</head>
+<body>
+</body>
 </html>
