@@ -1,8 +1,16 @@
 CACHE MANIFEST
+
+# Main page
 index.html
+
+# Scripts
 js/app.js
 js/lib/json2.js
+
+# CSS
 css/main.css
+
+# Fonts
 https://fonts.googleapis.com/css?family=Julius+Sans+One
 
 FALLBACK:
