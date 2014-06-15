@@ -15,7 +15,10 @@
   <script type="text/javascript" src="js/app.js"></script>
   <script>
     window.applicationCache.addEventListener('updateReady', function () {
-        window.location.reload();
+        if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+          window.applicationCache.swapCache();
+          window.location.reload();
+        }
     });
   </script>
   <!--[ end Scripts ]-->
